@@ -1,0 +1,117 @@
+------------------------------------------------
+-- Measure: [Cumulative Product Sales using VAR]
+------------------------------------------------
+MEASURE 'Core Measures'[Cumulative Product Sales using VAR] = 
+    // this gives the current row context of the Products Index columns
+    // can then use this instead of EARLIER(Products[Index])
+    VAR IndexColumn = SELECTEDVALUE( 'Products'[Product Name] )
+    VAR Result =
+        CALCULATE(
+            [£ Total Sales],
+            FILTER(
+                ALLSELECTED( 'Products' ),
+                'Products'[Product Name] <= IndexColumn
+            )
+        )
+    RETURN
+        Result
+    Description = "Expression:
+
+// this gives the current row context of the Products Index columns
+// can then use this instead of EARLIER(Products[Index])
+VAR IndexColumn = SELECTEDVALUE(Products[Product Name])
+VAR Result = CALCULATE (
+    [£ Total Sales],
+    FILTER(
+        ALLSELECTED('Products'), 
+        Products[Product Name] <= IndexColumn ))
+RETURN
+Result
+"
+    DisplayFolder = "Cumulative Measues"
+
+------------------------------
+-- Measure: [Cumulative Sales]
+------------------------------
+MEASURE 'Core Measures'[Cumulative Sales] = 
+    CALCULATE(
+        [£ Total Sales],
+        FILTER(
+            ALLSELECTED( 'Date' ), -- ignores dates in the visual but allows slicers etc to add to the context of the visual
+            'Date'[Date] <= MAX( 'Date'[Date] )
+        )
+    )
+    Description = "Expression:
+
+CALCULATE( [£ Total Sales],
+FILTER(
+    ALLSELECTED('Date'),
+        'Date'[Date] <= MAX('Date'[Date])))"
+    DisplayFolder = "Cumulative Measues"
+
+-----------------------------------
+-- Measure: [Cumulative Sales Diff]
+-----------------------------------
+MEASURE 'Core Measures'[Cumulative Sales Diff] = [Cumulative Sales] - [Cumulative Sales LY]
+    Description = "Expression:
+
+[Cumulative Sales] - [Cumulative Sales LY]"
+    DisplayFolder = "Cumulative Measues"
+
+---------------------------------
+-- Measure: [Cumulative Sales FY]
+---------------------------------
+MEASURE 'Core Measures'[Cumulative Sales FY] = 
+    CALCULATE(
+        [£ Total Sales],
+        FILTER(
+            ALLSELECTED( 'Date'[Date] ),
+            'Date'[Date] <= MAX( 'Date'[Date] )
+        ),
+        VALUES( 'Date'[Year] )
+    )
+    Description = "Expression:
+
+CALCULATE([£ Total Sales],
+FILTER(ALLSELECTED('Date'[Date]), 
+'Date'[Date] <= MAX('Date'[Date])),
+VALUES('Date'[Year]))"
+    DisplayFolder = "Cumulative Measues"
+
+---------------------------------
+-- Measure: [Cumulative Sales LQ]
+---------------------------------
+MEASURE 'Core Measures'[Cumulative Sales LQ] = 
+    CALCULATE(
+        [# Sales LQ],
+        FILTER(
+            ALLSELECTED( 'Date' ),
+            'Date'[Date] <= MAX( 'Date'[Date] )
+        )
+    )
+    Description = "Expression:
+
+CALCULATE( [# Sales LQ],
+FILTER(
+    ALLSELECTED('Date'),
+        'Date'[Date] <= MAX('Date'[Date])))"
+    DisplayFolder = "Cumulative Measues"
+
+---------------------------------
+-- Measure: [Cumulative Sales LY]
+---------------------------------
+MEASURE 'Core Measures'[Cumulative Sales LY] = 
+    CALCULATE(
+        [£ Sales LY],
+        FILTER(
+            ALLSELECTED( 'Date' ),
+            'Date'[Date] <= MAX( 'Date'[Date] )
+        )
+    )
+    Description = "Expression:
+
+CALCULATE( [£ Sales LY],
+FILTER(
+    ALLSELECTED('Date'),
+        'Date'[Date] <= MAX('Date'[Date])))"
+    DisplayFolder = "Cumulative Measues"
